@@ -267,7 +267,7 @@
     <div class="sidebar-divider"></div>
     <div class="sidebar-section">
       <span class="sidebar-label">Reports</span>
-      <div class="nav-item" data-roles="admin,principal,teacher" onclick="navigate('results')"><span class="nav-icon">▤</span> View Results</div>
+      <div class="nav-item" data-roles="admin,principal,teacher" id="nav-view-results" onclick="navigate('results')"><span class="nav-icon">▤</span> View Results</div>
       <div class="nav-item" data-roles="admin,principal,teacher" onclick="navigate('ranking')"><span class="nav-icon">◆</span> Class Ranking</div>
       <div class="nav-item" data-roles="admin,principal,teacher" onclick="navigate('print-class')"><span class="nav-icon">🖨</span> Print Class</div>
     </div>
@@ -876,6 +876,21 @@ function applyRoleVisibility(){
     const allowed=el.getAttribute('data-roles').split(',');
     el.style.display = allowed.includes(role) ? '' : 'none';
   });
+  // "View Results" is further restricted beyond the admin/principal/teacher role check above:
+  // a plain subject teacher should not see it — only a form master (homeroom teacher, or a
+  // subject teacher flagged as Form Teacher for a class), the principal (headmaster) and admin.
+  const viewResultsNav=document.getElementById('nav-view-results');
+  if(viewResultsNav && role==='teacher' && !isFormTeacher(currentUser)){
+    viewResultsNav.style.display='none';
+  }
+}
+// True for: any admin/principal (handled by caller), a homeroom teacher, or a subject teacher
+// who has been flagged as Form Teacher for at least one class.
+function isFormTeacher(u){
+  if(!u || u.role!=='teacher') return false;
+  if(u.assignmentType==='homeroom') return true;
+  if(u.assignmentType==='subject') return (u.formTeacherFor||[]).length>0;
+  return false;
 }
 // Returns true if this role is allowed on a given page; used to bounce
 // a role away from a page it shouldn't reach (e.g. typed/back-button nav).
@@ -1027,14 +1042,55 @@ function updatePromotionClassOptions(){
   classSelect.innerHTML = options.map(c => `<option value="${c}">${c}</option>`).join('');
 }
 
-/* ═══ AUTO-COMMENT GENERATOR ═══ */
+/* ═══ AUTO-COMMENT GENERATOR ═══
+   One remark is picked at random from the matching band's pool each time a
+   report card is generated (student's average decides the band). */
+const AUTO_REMARK_BANK = {
+  fail: [ // 0% – 39%
+    'Needs serious improvement. More effort and regular practice are required.',
+    'Performance is below expectation. The pupil needs closer attention and support.',
+    'Needs to work harder and develop better study habits.',
+    'Unsatisfactory performance. Greater commitment to learning is required.',
+    'The pupil needs significant improvement through regular study and guidance.'
+  ],
+  average: [ // 40% – 49%
+    'Fair performance. More effort is needed to achieve better results.',
+    'Shows some understanding but needs to work harder.',
+    'A fair attempt. Greater concentration and regular practice are encouraged.',
+    'Performance is satisfactory but there is room for improvement.',
+    'Making progress, but needs more dedication to reach a higher level.'
+  ],
+  good: [ // 50% – 59%
+    'Good performance. Keep working hard to achieve greater success.',
+    'Shows good understanding and satisfactory progress.',
+    'A good effort. More dedication will lead to better results.',
+    'Good performance with room for further improvement.',
+    'Making good progress. Keep up the effort and remain focused.'
+  ],
+  veryGood: [ // 60% – 69%
+    'Very good performance. Keep up the excellent effort.',
+    'Shows a very good understanding of the subjects. Keep working hard.',
+    'Very good progress. Greater consistency can lead to even better results.',
+    'A commendable performance. Keep up the good work.',
+    'Very good effort and achievement. Continue to aim higher.'
+  ],
+  excellent: [ // 70% – 100%
+    'Excellent performance. Keep up the outstanding work.',
+    'Outstanding achievement. A very impressive performance.',
+    'Excellent result. Continue to maintain this high standard.',
+    'Exceptional performance. Your hard work and dedication are commendable.',
+    'Superb achievement. Keep striving for excellence.'
+  ]
+};
 function generateAutoComment(avg, studentName) {
-  const namePrefix = studentName.split(' ')[0];
-  if (avg >= 80) return `${namePrefix} has demonstrated outstanding academic excellence this term with an impressive ${avg}% average. Continue to maintain this high standard. Well done!`;
-  else if (avg >= 70) return `${namePrefix} has performed very well this term with a ${avg}% average. With more effort, excellent grade is within reach. Keep it up!`;
-  else if (avg >= 60) return `${namePrefix} has shown good understanding with a ${avg}% average. Encourage more reading and practice at home. Good effort!`;
-  else if (avg >= 50) return `${namePrefix} achieved a ${avg}% average. There is significant room for improvement. With more focus, better results are achievable.`;
-  else return `${namePrefix} scored ${avg}% this term. Extra attention is needed in studies. Please ensure homework and class activities are taken seriously.`;
+  let band;
+  if (avg < 40) band = 'fail';
+  else if (avg < 50) band = 'average';
+  else if (avg < 60) band = 'good';
+  else if (avg < 70) band = 'veryGood';
+  else band = 'excellent';
+  const pool = AUTO_REMARK_BANK[band];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /* ═══ NAV ═══ */
@@ -1042,6 +1098,9 @@ let _currentPage='dashboard';
 function navigate(page){
   if(!currentUser) return;
   if(!(PAGE_ROLES[page]||[]).includes(currentUser.role)){ page='dashboard'; }
+  // Same restriction as the nav link: a subject teacher (not a form master) can't land on
+  // View Results even by typed/back-button navigation.
+  if(page==='results' && currentUser.role==='teacher' && !isFormTeacher(currentUser)){ page='dashboard'; }
   _currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
