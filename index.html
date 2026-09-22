@@ -697,7 +697,7 @@ const SCHOOL_INFO = {
 /* ═══ CLASS OPTIONS ═══ */
 const CLASS_OPTIONS = {
   nursery: ['Pre-Nursery', 'Nursery 1', 'Nursery 2', 'Nursery 3'],
-  primary: ['Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6'],
+  primary: ['Basic 1', 'Basic 2', 'Basic 3', 'Basic 4', 'Basic 5', 'Basic 6'],
   secondary: ['JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3']
 };
 
@@ -964,7 +964,7 @@ const DEFAULT_SUBJECTS=['Mathematics','English Language','Basic Science & Techno
 // ── Section subjects (stored separately, never touches existing data) ──
 let sectionSubjects = {
   nursery:   ['Numeracy','Literacy','Basic Science','Social Habits','Rhymes & Phonics','Drawing & Colouring','Physical & Health Education'],
-  primary:   ['Mathematics','English Language','Basic Science & Technology','Social Studies','Agricultural Science','Home Economics','Christian Religious Studies (CRS)','Civic Education','Computer Studies (ICT)'],
+  primary:   ['Mathematics','English Language','Basic Science & Technology','Social Studies','Agricultural Science','Home Economics','Islamic Religious Studies (IRS)','Civic Education','Computer Studies (ICT)'],
   secondary: ['Mathematics','English Language','Biology','Chemistry','Physics','Economics','Government','Literature in English','Geography','Further Mathematics']
 };
 function saveSectionSubjects(){ db.collection('appData').doc('sectionSubjects').set(sectionSubjects).catch(err=>toast('Could not save: '+err.message,'error')); }
