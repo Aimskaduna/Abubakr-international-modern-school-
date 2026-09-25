@@ -739,23 +739,7 @@ function getNextClass(currentLevel, currentClass) {
 }
 
 /* ═══ AUTH & USERS ═══════════════════════════════════════════════════
-   Sign-in now runs entirely on Firebase Authentication (email/password)
-   plus a matching profile document in Firestore's `users` collection.
-   SETUP (do this once, in the Firebase console for project "aimsrm"):
-     1. Authentication → Sign-in method → enable Email/Password.
-     2. Firestore Database → create database (production mode).
-     3. Copy your web app config into FIREBASE_CONFIG below (replace
-        every "REPLACE_ME_..." value) — Project settings → General.
-     4. Deploy the security rules in firestore.rules (see the separate
-        file) via Firestore → Rules, or the Firebase CLI.
-   ADDING A STAFF MEMBER (manual, for now):
-     1. Authentication → Users → Add user → enter their email + a
-        temporary password. Copy the "User UID" Firebase shows you.
-     2. In this app, go to Settings → User Management → Add User, and
-        paste that same UID + email + name + role. That creates their
-        Firestore profile so the app knows their role.
-     They can then sign in here with the email + password from step 1,
-     and use "Forgot password?" to set their own password afterward. */
+    
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCGWePjVm1SDwA_l_WtX-Wgoed0DInB_1c",
   authDomain: "aims-results-b5b21.firebaseapp.com",
@@ -2124,7 +2108,7 @@ function loadSettings(){
 let _activeSubjectSection = null;
 const DEFAULT_SECTION_SUBJECTS = {
   nursery:   ['Numeracy','Literacy','Basic Science','Social Habits','Rhymes & Phonics','Drawing & Colouring','Physical & Health Education'],
-  primary:   ['Mathematics','English Language','Basic Science & Technology','Social Studies','Agricultural Science','Home Economics','Christian Religious Studies (CRS)','Civic Education','Computer Studies (ICT)'],
+  primary:   ['Mathematics','English Language','Basic Science & Technology','Social Studies','Agricultural Science','Home Economics','Religious Studies (CRS)','Civic Education','Computer Studies (ICT)'],
   secondary: ['Mathematics','English Language','Biology','Chemistry','Physics','Economics','Government','Literature in English','Geography','Further Mathematics']
 };
 function showSubjectSection(level){
