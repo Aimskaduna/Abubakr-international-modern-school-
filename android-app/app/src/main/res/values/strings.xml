@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">AIMSRESULTS</string>
+
+    <!--
+      ⚠️ CONFIRM THIS URL — this is the only thing you MUST check before building.
+      It should be the exact live address of your site (the GitHub Pages URL),
+      including the repo name path if your site isn't at the root of aimskaduna.github.io.
+      Example: https://aimskaduna.github.io/Abubakr-international-model-school/
+    -->
+    <string name="app_url" translatable="false">PUT_YOUR_SITE_URL_HERE</string>
+
+    <string name="no_internet_title">No Internet Connection</string>
+    <string name="no_internet_message">Please check your connection and try again.</string>
+    <string name="retry">Retry</string>
+</resources>
