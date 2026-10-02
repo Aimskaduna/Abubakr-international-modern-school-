@@ -553,6 +553,13 @@
           </div>
         </div>
       </div>
+      <div class="card" style="margin-bottom:24px;border:1px solid var(--ruby)">
+        <div class="card-header"><div class="card-title" style="color:var(--ruby)">⚠ Danger Zone</div></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--slate);margin-bottom:14px">Permanently deletes every result for every exam, term and student — scores, grades, comments, everything. Student names, classes and bio-data are <strong>not</strong> touched. This cannot be undone. Download a backup first if you're not sure.</p>
+          <button class="btn btn-danger" onclick="confirmDeleteAllResults()">🗑 Delete All Results</button>
+        </div>
+      </div>
       <div class="card">
         <div class="card-header"><div class="card-title">Grading Scale</div></div>
         <div class="card-body">
@@ -2271,6 +2278,18 @@ function exportData(){
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
   toast('Backup downloaded!','success');
+}
+function confirmDeleteAllResults(){
+  const count=results.length;
+  if(count===0){toast('There are no results to delete.','success');return;}
+  const typed=prompt(`This will permanently delete all ${count} result record(s) for every student, every exam, every term.\n\nStudents themselves will NOT be touched.\n\nThis cannot be undone. Type DELETE (in capitals) to confirm:`);
+  if(typed===null){toast('Cancelled — nothing was deleted.','success');return;}
+  if(typed.trim()!=='DELETE'){toast('Did not match "DELETE" exactly — nothing was deleted.','error');return;}
+  results=[];
+  db.collection('appData').doc('results').set({list:[]}).then(()=>{
+    toast(`✓ Deleted ${count} result record(s). Students were not affected.`,'success');
+    if(typeof renderDashboard==='function' && _currentPage==='dashboard') renderDashboard();
+  }).catch(err=>{toast('Could not delete results: '+err.message,'error');});
 }
 function importStudentsOnly(event){
   const file=event.target.files[0];if(!file)return;
