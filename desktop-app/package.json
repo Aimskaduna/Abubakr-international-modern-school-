@@ -1,0 +1,31 @@
+{
+  "name": "aimsresults-desktop",
+  "version": "1.0.0",
+  "description": "AIMSRESULTS desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish=never"
+  },
+  "build": {
+    "appId": "ng.edu.abma.aimsresults.desktop",
+    "productName": "AIMSRESULTS",
+    "icon": "build/icon.png",
+    "files": ["main.js", "package.json"],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  }
+}

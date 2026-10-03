@@ -1,0 +1,45 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'desktop-app/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: desktop-app
+        run: npm install
+
+      - name: Build installer
+        working-directory: desktop-app
+        run: npx electron-builder --publish=never
+
+      - name: Upload Windows installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIMSRESULTS-Windows
+          path: desktop-app/dist/*.exe
+
+      - name: Upload Mac installer
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIMSRESULTS-Mac
+          path: desktop-app/dist/*.dmg
